@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #f0ece3; overflow-x: hidden; }
+
+  .noise { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); }
+
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 80px 24px 60px; position: relative; z-index: 1; }
+
+  .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #c9a84c; border: 1px solid rgba(201,168,76,0.3); padding: 6px 14px; border-radius: 100px; margin-bottom: 40px; }
+  .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: #c9a84c; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(42px, 7vw, 88px); line-height: 1.05; font-weight: 700; letter-spacing: -0.02em; max-width: 820px; margin-bottom: 24px; }
+  h1 em { font-style: italic; color: #c9a84c; }
+
+  .sub { font-size: clamp(15px, 2vw, 18px); color: rgba(240,236,227,0.55); max-width: 480px; line-height: 1.7; margin-bottom: 48px; font-weight: 300; }
+
+  .cta-group { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .cta-input-row { display: flex; gap: 0; border: 1px solid rgba(240,236,227,0.2); border-radius: 100px; overflow: hidden; background: rgba(255,255,255,0.04); }
+  .cta-input-row input { background: transparent; border: none; outline: none; padding: 14px 20px; font-size: 15px; color: #f0ece3; font-family: 'DM Sans', sans-serif; width: 240px; }
+  .cta-input-row input::placeholder { color: rgba(240,236,227,0.3); }
+  .cta-btn { background: #c9a84c; color: #0a0a0a; border: none; padding: 14px 24px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; letter-spacing: 0.02em; white-space: nowrap; transition: background 0.2s; }
+  .cta-btn:hover { background: #dfc06a; }
+  .cta-note { font-size: 12px; color: rgba(240,236,227,0.3); letter-spacing: 0.02em; }
+
+  .scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: 0.3; }
+  .scroll-hint span { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .scroll-line { width: 1px; height: 32px; background: linear-gradient(to bottom, #f0ece3, transparent); animation: scrollAnim 1.8s ease-in-out infinite; }
+  @keyframes scrollAnim { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+  .divider { width: 100%; height: 1px; background: rgba(240,236,227,0.08); }
+
+  .how { padding: 100px 24px; max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .section-label { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,236,227,0.35); margin-bottom: 48px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
+  .step { display: flex; flex-direction: column; gap: 16px; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 48px; color: rgba(201,168,76,0.25); line-height: 1; font-weight: 700; }
+  .step h3 { font-size: 17px; font-weight: 500; line-height: 1.3; }
+  .step p { font-size: 14px; color: rgba(240,236,227,0.45); line-height: 1.7; font-weight: 300; }
+
+  .shows-section { padding: 0 24px 100px; max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .show-cards { display: flex; flex-direction: column; gap: 1px; background: rgba(240,236,227,0.06); border-radius: 16px; overflow: hidden; }
+  .show-card { display: flex; align-items: center; gap: 20px; padding: 18px 24px; background: #0f0f0f; transition: background 0.2s; cursor: default; }
+  .show-card:hover { background: #141414; }
+  .show-date { text-align: center; min-width: 44px; }
+  .show-date .month { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #c9a84c; }
+  .show-date .day { font-size: 22px; font-family: 'Playfair Display', serif; font-weight: 700; line-height: 1; }
+  .show-info { flex: 1; }
+  .show-info .artist { font-size: 15px; font-weight: 500; }
+  .show-info .venue { font-size: 13px; color: rgba(240,236,227,0.4); margin-top: 2px; }
+  .show-match { font-size: 11px; color: #c9a84c; letter-spacing: 0.06em; background: rgba(201,168,76,0.1); padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
+
+  .pricing { padding: 100px 24px; text-align: center; position: relative; z-index: 1; }
+  .pricing h2 { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 700; margin-bottom: 16px; }
+  .pricing .sub { margin: 0 auto 48px; }
+  .price-card { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; border: 1px solid rgba(201,168,76,0.3); border-radius: 20px; padding: 48px 56px; background: rgba(201,168,76,0.04); }
+  .price-amount { font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 700; line-height: 1; color: #c9a84c; }
+  .price-period { font-size: 14px; color: rgba(240,236,227,0.35); letter-spacing: 0.06em; margin-bottom: 8px; }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 16px 0 32px; }
+  .price-features li { font-size: 14px; color: rgba(240,236,227,0.6); display: flex; align-items: center; gap: 8px; }
+  .check { width: 14px; height: 14px; border-radius: 50%; background: rgba(201,168,76,0.2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .check::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #c9a84c; }
+  .price-cta { background: #c9a84c; color: #0a0a0a; border: none; padding: 14px 36px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; border-radius: 100px; cursor: pointer; transition: background 0.2s; }
+  .price-cta:hover { background: #dfc06a; }
+
+  footer { padding: 40px 24px; text-align: center; border-top: 1px solid rgba(240,236,227,0.06); position: relative; z-index: 1; }
+  footer p { font-size: 13px; color: rgba(240,236,227,0.2); }
+  footer span { color: #c9a84c; }
+
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  .hero > * { animation: fadeUp 0.7s ease both; }
+  .hero .tag { animation-delay: 0.1s; }
+  .hero h1 { animation-delay: 0.2s; }
+  .hero .sub { animation-delay: 0.3s; }
+  .hero .cta-group { animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<section class="hero">
+  <div class="tag"><span class="tag-dot"></span> Now in early access · New York City</div>
+  <h1>Never miss a show from an artist you <em>actually</em> love.</h1>
+  <p class="sub">Connect your Spotify. We'll watch the concert listings and alert you when your most-played artists are coming to NYC.</p>
+  <div class="cta-group">
+    <div class="cta-input-row">
+      <input type="email" placeholder="your@email.com" />
+      <button class="cta-btn" onclick="handleSignup()">Get early access</button>
+    </div>
+    <span class="cta-note">Free during beta · $5/mo when we launch</span>
+  </div>
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="how">
+  <p class="section-label">How it works</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Connect your Spotify</h3>
+      <p>We read your top artists and listening frequency — the more you play someone, the higher they rank.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>We scan every NYC show</h3>
+      <p>Clubs, arenas, rooftops — we track every venue and match upcoming dates against your taste profile.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Get your weekly digest</h3>
+      <p>Every Monday morning: your personalized show list, ranked by how obsessed you actually are with each artist.</p>
+    </div>
+  </div>
+</section>
+
+<section class="shows-section">
+  <p class="section-label" style="margin-bottom: 20px;">Your upcoming shows · this week</p>
+  <div class="show-cards">
+    <div class="show-card">
+      <div class="show-date"><div class="month">May</div><div class="day">09</div></div>
+      <div class="show-info"><div class="artist">Mk.gee</div><div class="venue">Brooklyn Steel</div></div>
+      <div class="show-match">Your #2 artist</div>
+    </div>
+    <div class="show-card">
+      <div class="show-date"><div class="month">May</div><div class="day">12</div></div>
+      <div class="show-info"><div class="artist">Faye Webster</div><div class="venue">Terminal 5</div></div>
+      <div class="show-match">Your #5 artist</div>
+    </div>
+    <div class="show-card">
+      <div class="show-date"><div class="month">May</div><div class="day">17</div></div>
+      <div class="show-info"><div class="artist">Men I Trust</div><div class="venue">Bowery Ballroom</div></div>
+      <div class="show-match">Your #8 artist</div>
+    </div>
+    <div class="show-card" style="opacity: 0.4;">
+      <div class="show-date"><div class="month">May</div><div class="day">21</div></div>
+      <div class="show-info"><div class="artist">+ 4 more shows this month</div><div class="venue">Connect Spotify to see them all</div></div>
+      <div class="show-match">Unlock all</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="pricing">
+  <h2>Simple pricing.</h2>
+  <p class="sub">One plan. No tiers, no upsells. Just your shows.</p>
+  <div class="price-card">
+    <div class="price-amount">$5</div>
+    <div class="price-period">per month</div>
+    <ul class="price-features">
+      <li><span class="check"></span>Spotify integration & weekly digest</li>
+      <li><span class="check"></span>Ranked by your listening frequency</li>
+      <li><span class="check"></span>All NYC venues covered</li>
+      <li><span class="check"></span>Instant alerts for new announcements</li>
+    </ul>
+    <button class="price-cta" onclick="handleSignup()">Get early access — free</button>
+  </div>
+</section>
+
+<footer>
+  <p>Built in <span>New York City</span> for people who actually go to shows.</p>
+</footer>
+
+<script>
+function handleSignup() {
+  const input = document.querySelector('.cta-input-row input');
+  const email = input ? input.value.trim() : '';
+  if (email && email.includes('@')) {
+    sendPrompt('Someone just signed up with email: ' + email + ' — what should I tell them next?');
+  } else {
+    input.style.outline = '1px solid rgba(201,168,76,0.6)';
+    input.placeholder = 'enter your email first';
+    setTimeout(() => { input.style.outline = 'none'; input.placeholder = 'your@email.com'; }, 2000);
+  }
+}
+</script>
+</body>
+</html>
